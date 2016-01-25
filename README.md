@@ -1,7 +1,7 @@
 # FTypes
 ## An Asynchronous Type System in Scala
 
-FTypes is a **type system**: you have basic types and means for creating more complex types out of simpler ones.
+FTypes is a **type system**: it provides basic types and means for creating more complex types out of simpler ones.
 
 FTypes types are **asynchronous**: like with Futures, they don't (necessarily) hold the actual value. They hold a pointer to wherever the value is going to be, whenever that value becomes available.
 
@@ -58,7 +58,7 @@ val totalCount:   async.Int = europeCount + americaCount
 
 ### Interoperativility
 
-Eventually (probably in the extremes of your code) you will need to operate with a more standard Scala way. FTypes provides an easy way to convert to (and from) Futures to the underlaying synchronous type:
+Eventually (probably in the extremes of your code) you will need to operate with a more standard Scala way. FTypes provides an easy way to convert to (and from) Futures (Futures to the underlaying synchronous type):
 
 ```scala
 
@@ -111,6 +111,16 @@ This bit is extremely experimental, but thanks to the power of macros (and macro
 
 NOTE: as in the case of Array, async case classes can only hold async fields
 
+### Compatibility
+
+The project is provided for:
+- JVM
+- ScalaJS
+ 
+And Scala Versions:
+- 2.10
+- 2.11
+
 
 ### Roadmap
 
@@ -119,3 +129,13 @@ NOTE: as in the case of Array, async case classes can only hold async fields
 - Create async versions of StringOps, RichInt, ...
 - Create an async version of the collections library
 - Create the Option and Try monads
+ 
+
+### Layers
+
+This project don't contain much code by itself. It's instead a composition of the following projects:
+- [Vals](https://github.com/marcesquerra/FTypes-Vals) Core system and base types (childs of "AnyVal")
+- [Array](https://github.com/marcesquerra/FTypes-Array)
+- [String](https://github.com/marcesquerra/FTypes-String)
+- [CaseClass](https://github.com/marcesquerra/FTypes-CaseClass) Provides the "@Async" annotation for case classes. Require Macro Paradise
+ 
