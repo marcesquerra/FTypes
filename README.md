@@ -1,11 +1,51 @@
-# FTypes
-## An Asynchronous Type System in Scala
+# Async without Future
 
-FTypes is a **type system**: it provides basic types and means for creating more complex types out of simpler ones.
 
-FTypes types are **asynchronous**: like with Futures, they don't (necessarily) hold the actual value. They hold a pointer to wherever the value is going to be, whenever that value becomes available.
+FTypes:
 
-### Sample
+* right now, IS EXPERIMENTAL
+* is a type system
+* is for concurrent programming (async)
+* solve the same problem than futures do (without futures)
+* allows working with asynchronous types as if they were normal synchronous ones
+
+```scala
+
+import scala.concurrent.Future
+import com.bryghts.ftypes._
+
+val a = async.Int(Future.successful(3))
+val b = async.Int(Future.successful(4))
+
+val c: async.Int = a + b
+
+```
+
+# Getting Started
+
+Include in your SBT file:
+
+```sbt
+
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+
+libraryDependencies += "com.bryghts.ftypes" %% "ftypes" % "0.0.3"
+
+```
+
+Or, if you are using ScalaJS:
+
+```sbt
+
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+
+libraryDependencies += "com.bryghts.ftypes" %%% "ftypes" % "0.0.3"
+
+```
+
+NOTE: The first line is to include the [Macro Paradise compiler plugin](http://docs.scala-lang.org/overviews/macros/paradise.html) which powers the [@Async](#case-classes) macro-annotation
+
+# Sample
 Imagine we have a function like this:
 
 ```scala
@@ -56,7 +96,7 @@ val totalCount:   async.Int = europeCount + americaCount
 
 **async.Int** is just one of the types that FTypes provides out of the box, with practically all the same operations than the standard Int, where, like in the example, the '+' operation returns an async.Int that will hold the value of the sum (whenever the other two numbers are available)
 
-### Interoperativility
+# Interoperativility
 
 Eventually (probably in the extremes of your code) you will need to operate with a more standard Scala way. FTypes provides an easy way to convert to (and from) Futures (Futures to the underlaying synchronous type):
 
@@ -71,7 +111,7 @@ val fb: Future[Boolean] = b.future
 
 ```
 
-### Base types
+# Base types
 
 For now, the following base types are implemented:
 
@@ -85,7 +125,7 @@ For now, the following base types are implemented:
 - async.Boolean
 - async.String (this is a work in progress)
 
-### Arrays
+# Arrays
 
 You can create immutable async arrays like with basic arrays:
 
@@ -99,7 +139,7 @@ val l = l.length  // returns an async.Int
 
 NOTE: async arrays can only hold async types
 
-### Case classes
+# Case classes
 
 This bit is extremely experimental, but thanks to the power of macros (and macro annotations), creating async case classes is as simple as this:
 
@@ -111,7 +151,7 @@ This bit is extremely experimental, but thanks to the power of macros (and macro
 
 NOTE: as in the case of Array, async case classes can only hold async fields
 
-### Compatibility
+# Compatibility
 
 The project is provided for:
 - JVM
@@ -122,7 +162,7 @@ And Scala Versions:
 - 2.11
 
 
-### Roadmap
+# Roadmap
 
 - Improve this documentation (including the SBT section)
 - Finish the String implementation
@@ -131,7 +171,7 @@ And Scala Versions:
 - Create the Option and Try monads
  
 
-### Layers
+# Layers
 
 This project don't contain much code by itself. It's instead a composition of the following projects:
 - [Vals](https://github.com/marcesquerra/FTypes-Vals) Core system and base types (childs of "AnyVal")
