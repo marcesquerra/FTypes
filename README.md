@@ -21,6 +21,9 @@ val b = async.Int(Future.successful(4))
 val c: async.Int = a + b
 
 ```
+<br />
+<br />
+
 
 # Getting Started
 
@@ -45,8 +48,13 @@ libraryDependencies += "com.bryghts.ftypes" %%% "ftypes" % "0.0.3"
 ```
 
 NOTE: The first line is to include the [Macro Paradise compiler plugin](http://docs.scala-lang.org/overviews/macros/paradise.html) which powers the [@Async](#case-classes) macro-annotation
+<br />
+<br />
+
 
 # Example
+
+
 Imagine we have coded a function that returns how many healthy and active servers we have, for a particular region. The response of such a method would quite possibly be asynchronous, which, if we want to access the value, usually opens up three possibilities:
 
 * Blocking. Currently, in the Scalasphere this is considerd a **Very Bad Idea** (I'm looking on sources to support this point)
@@ -117,6 +125,8 @@ val totalCount:   async.Int = europeCount + americaCount
 ```
 
 **async.Int** is just one of the types that FTypes provides out of the box, with, practically, all the same operations (methods) than the standard Int, where, like in the example, the '+' operation returns an async.Int that will hold the value of the sum (whenever the other two numbers are available)
+<br />
+<br />
 
 
 # Futures without Future
@@ -153,6 +163,8 @@ Can now be reimplemented for the asynchronous world like this:
 ```scala
 def average(a: async.Double, b: async.Double): async.Double = (a + b) / 2
 ```
+<br />
+<br />
 
 
 # Interoperativility
@@ -169,6 +181,9 @@ val b: async.Boolean = ???
 val fb: Future[Boolean] = b.future
 
 ```
+<br />
+<br />
+
 
 # Base types
 
@@ -183,6 +198,9 @@ For now, the following base types are implemented:
 - async.Double
 - async.Boolean
 - async.String (this is a work in progress)
+<br />
+<br />
+
 
 # Arrays
 
@@ -197,6 +215,9 @@ val l = l.length  // returns an async.Int
 ```
 
 NOTE: async arrays can only hold async types
+<br />
+<br />
+
 
 # Case classes
 
@@ -209,6 +230,9 @@ This bit is extremely experimental, but thanks to the power of macros (and macro
 ```
 
 NOTE: as in the case of Array, async case classes can only hold async fields
+<br />
+<br />
+
 
 # Compatibility
 
@@ -219,6 +243,8 @@ The project is provided for:
 And Scala Versions:
 - 2.10
 - 2.11
+<br />
+<br />
 
 
 # Roadmap
@@ -228,13 +254,17 @@ And Scala Versions:
 - Create async versions of StringOps, RichInt, ...
 - Create an async version of the collections library
 - Create the Option and Try monads
- 
+<br />
+<br />
+
+
 
 # Layers
 
 This project don't contain much code by itself. It's instead a composition of the following projects:
-- [Vals](https://github.com/marcesquerra/FTypes-Vals) Core system and base types (childs of "AnyVal")
-- [Array](https://github.com/marcesquerra/FTypes-Array)
-- [String](https://github.com/marcesquerra/FTypes-String)
-- [CaseClass](https://github.com/marcesquerra/FTypes-CaseClass) Provides the "@Async" annotation for case classes. Require Macro Paradise
+
+* [Vals](https://github.com/marcesquerra/FTypes-Vals) Core system and base types (childs of "AnyVal")
+* [Array](https://github.com/marcesquerra/FTypes-Array)
+* [String](https://github.com/marcesquerra/FTypes-String)
+* [CaseClass](https://github.com/marcesquerra/FTypes-CaseClass) Provides the "@Async" annotation for case classes. Require Macro Paradise
  
