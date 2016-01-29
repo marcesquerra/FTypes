@@ -50,6 +50,7 @@ libraryDependencies += "com.bryghts.ftypes" %%% "ftypes" % "0.0.3"
 NOTE: The first line is to include the [Macro Paradise compiler plugin](http://docs.scala-lang.org/overviews/macros/paradise.html) which powers the [@Async](#case-classes) macro-annotation
 <br />
 <br />
+<br />
 
 
 # Example
@@ -127,6 +128,7 @@ val totalCount:   async.Int = europeCount + americaCount
 **async.Int** is just one of the types that FTypes provides out of the box, with, practically, all the same operations (methods) than the standard Int, where, like in the example, the '+' operation returns an async.Int that will hold the value of the sum (whenever the other two numbers are available)
 <br />
 <br />
+<br />
 
 
 # Futures without Future
@@ -165,6 +167,126 @@ def average(a: async.Double, b: async.Double): async.Double = (a + b) / 2
 ```
 <br />
 <br />
+<br />
+
+
+# A Type System
+
+FTypes is a type system. What I mean with that is that it provides a collection of [base-types](#base-types) and means for creating complex types out of simpler ones, like [async arrays](#arrays) or [async case classes](#case-classes).
+
+## Every ASync has a Sync
+In the end, the async types provided by FTypes are a very specialised form of Future: something that will hold a value at some point in time, in the future. This something, this result of a computation, is going to be a concrete series of bits in your computer. And this series of bits, to be meaningful, are going to have a concrete, synchronous, old-school type.
+
+If, for example, a method returns an `async.Int`, what we are saying is that this method is returning a ticket, a special ticket that is changeable for the actual value when that value becomes available. But, that value that will become available is going to be an standard Scala `Int`.
+
+**The `async.Int` type is associated with (or represented by) an `scala.Int`**
+
+And that holds true for every single async type.
+
+## Any async type
+All async types extend:
+
+```scala
+async.Any[T, FT]
+```
+
+Where, `T` is the synchronous type and `FT` is the type extending `async.Any`. For example, `async.Int` declared in a way similar to this:
+
+```scala
+package com.bryghts.ftypes
+package async
+
+class Int extends async.Any[scala.Int, async.Int]
+```
+
+
+## Base types
+
+For now, the following base types are implemented:
+
+- async.Byte
+- async.Char
+- async.Short
+- async.Int
+- async.Long
+- async.Float
+- async.Double
+- async.Boolean
+- async.String
+
+Note: The [RichInt](http://www.scala-lang.org/files/archive/api/current/index.html#scala.runtime.RichInt) and similar extensions have not been implemented yet.
+
+
+## Arrays
+
+You can create immutable async arrays like with basic arrays:
+
+```scala
+
+val a = async.Array[async.Int](1, 2, 3)
+val b = a(1)
+val l = l.length  // returns an async.Int
+
+```
+These arrays are immutable because update operations on asynchronous types would break the reason why futures work so well.
+
+NOTE: async arrays can only hold async types
+
+
+## Case classes
+
+This bit is extremely experimental, because:
+
+* It uses macro annotations (which are experimental by themselves)
+* Macros are hard and complex to write, which makes this bit require a lot more testing than it has (for now)
+
+As I've [mentioned before](#every-async-has-a-sync), every async type needs a synchronous counterpart. And this starts being a problem when you need to create custom classes.
+
+Imagine we need a Person class:
+
+```scala
+
+case class Person(name: String, age: Int)
+
+```
+
+If we want to make "Person" asynchronous, the first idea that comes to mind, is to make the fields asynchronous:
+
+```scala
+
+case class Person(name: async.String, age: async.Int)
+
+```
+
+But this doesn't really solve the problem. If you have a method that returns a Person in an async way you will still need to return a Future[Person], which doesn't solve much. Another option is to create two types and relate them. This is a non-compiling and simplified version on how you would do that with FTypes:
+
+```scala
+
+case class SyncPerson(name: async.String, age: async.Int)
+
+case class Person(future: Future[SyncPerson]) extends async.Any[SyncPerson, Person] {
+    def name = future.map(_.name).flatten
+    def age = future.map(_.age).flatten
+}
+
+```
+
+As you can see, this approach is bloated, cumbersome and error-prone. And it's just the non-compiling and simplified version!
+
+The solution is the `@Async` macro annotation that FTypes provides. This macro does all that for you in a transparent way:
+
+```scala
+
+@Async case class Person(name: async.String, age: async.Int)
+
+```
+
+
+
+NOTE: as in the case of Array, async case classes can only hold async fields
+<br />
+<br />
+<br />
 
 
 # Interoperativility
@@ -183,54 +305,6 @@ val fb: Future[Boolean] = b.future
 ```
 <br />
 <br />
-
-
-# Base types
-
-For now, the following base types are implemented:
-
-- async.Byte
-- async.Char
-- async.Short
-- async.Int
-- async.Long
-- async.Float
-- async.Double
-- async.Boolean
-- async.String (this is a work in progress)
-<br />
-<br />
-
-
-# Arrays
-
-You can create immutable async arrays like with basic arrays:
-
-```scala
-
-val a = async.Array[async.Int](1, 2, 3)
-val b = a(1)
-val l = l.length  // returns an async.Int
-
-```
-
-NOTE: async arrays can only hold async types
-<br />
-<br />
-
-
-# Case classes
-
-This bit is extremely experimental, but thanks to the power of macros (and macro annotations), creating async case classes is as simple as this:
-
-```scala
-
-@Async case class Person(name: async.String, age: async.Int)
-
-```
-
-NOTE: as in the case of Array, async case classes can only hold async fields
-<br />
 <br />
 
 
@@ -245,6 +319,7 @@ And Scala Versions:
 - 2.11
 <br />
 <br />
+<br />
 
 
 # Roadmap
@@ -256,7 +331,7 @@ And Scala Versions:
 - Create the Option and Try monads
 <br />
 <br />
-
+<br />
 
 
 # Layers
