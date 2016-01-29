@@ -3,18 +3,19 @@
 
 FTypes:
 
-* right now: IS EXPERIMENTAL
-* is a type system
-* is for concurrent programming (async)
-* solve the same problem than futures do (without futures)
-* allows working with asynchronous types as if they were normal synchronous ones
+* Right now: **IS EXPERIMENTAL**
+* Is a type system (that is: a collection of base types plus means for building complex types out of simpler ones)
+* Is for concurrent programming (async)
+* Solve the same problem than futures do. But without futures (or nearly so)
+* Allows working with asynchronous types as if they were normal synchronous ones
+* These async types have the same interface (methods) than their synchronous counterparts
 
 ```scala
 
 import scala.concurrent.Future
 import com.bryghts.ftypes._
 
-val a = async.Int(Future.successful(3))
+val a = async.Int(Future.successful(3)) // Convert Future into async
 val b = async.Int(Future.successful(4))
 
 val c: async.Int = a + b
@@ -33,7 +34,7 @@ libraryDependencies += "com.bryghts.ftypes" %% "ftypes" % "0.0.3"
 
 ```
 
-Or, if you are using ScalaJS:
+Or, if you are using [ScalaJS](http://www.scala-js.org/):
 
 ```sbt
 
@@ -46,17 +47,27 @@ libraryDependencies += "com.bryghts.ftypes" %%% "ftypes" % "0.0.3"
 NOTE: The first line is to include the [Macro Paradise compiler plugin](http://docs.scala-lang.org/overviews/macros/paradise.html) which powers the [@Async](#case-classes) macro-annotation
 
 # Example
-Imagine we have a function like this:
+Imagine we have coded a function that returns how many healthy and active servers we have, for a particular region. The response of such a method would quite possibly be asynchronous, which, if we want to access the value, usually opens up three possibilities:
+
+* Blocking. Currently, in the Scalasphere this is considerd a **Very Bad Idea** (I'm looking on sources to support this point)
+* Callbacks. Nearly as bad a blocking ([Google for "Callback Hell"](http://www.google.com/search?q=callback+hell))
+* Futures (of which FTypes are a variant)
+
+In this example, I'm going to compare standard scala Futures with FTypes.
+
+## With Futures
+In this case, our method would have a signature more or less like this:
 
 ```scala
+
+import scala.concurrent._
 
 def getActiveServers(regionId: Int): Future[Int] = ???
 
 ```
 
-And we want to compute how many servers we have if we combine Europe and America.
+And, if we want to compute how many servers we have if we combine Europe and America:
 
-With standard Futures you would do something like this:
 
 ```scala
 
@@ -68,9 +79,12 @@ val totalCount: Future[Int] =
 
 ```
 
-Or, to make it a bit nicer:
+Or, with for comprehencion, we can make it a bit nicer:
 
 ```scala
+
+val europeCount:  Future[Int]  = getActiveServers(europeId)
+val americaCount: Future[Int]  = getActiveServers(americaId)
 
 val totalCount: Future[Int] = for {
   e   <-   europeCount
@@ -79,13 +93,21 @@ val totalCount: Future[Int] = for {
 
 ```
 
-With FTypes would be something like this:
+## With FTypes
+Here, our method would have a really similar signature:
+
 
 ```scala
 
 import com.bryghts.ftypes._
 
 def getActiveServers(regionId: Int): async.Int = ???
+
+```
+
+The real difference comes when we use this method to the same computation than before:
+
+```scala
 
 val europeCount:  async.Int = getActiveServers(europeId)
 val americaCount: async.Int = getActiveServers(americaId)
@@ -94,7 +116,7 @@ val totalCount:   async.Int = europeCount + americaCount
 
 ```
 
-**async.Int** is just one of the types that FTypes provides out of the box, with practically all the same operations than the standard Int, where, like in the example, the '+' operation returns an async.Int that will hold the value of the sum (whenever the other two numbers are available)
+**async.Int** is just one of the types that FTypes provides out of the box, with, practically, all the same operations (methods) than the standard Int, where, like in the example, the '+' operation returns an async.Int that will hold the value of the sum (whenever the other two numbers are available)
 
 
 # Futures without Future
