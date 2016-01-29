@@ -325,7 +325,6 @@ And Scala Versions:
 # Roadmap
 
 - Improve this documentation (including the SBT section)
-- Finish the String implementation
 - Create async versions of StringOps, RichInt, ...
 - Create an async version of the collections library
 - Create the Option and Try monads
