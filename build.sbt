@@ -67,8 +67,11 @@ lazy val cross = crossProject.in(file("."))
     .settings(
         moduleName := nameLiteral,
         name := nameLiteral,
-        libraryDependencies ++= Seq( "com.bryghts.ftypes-array" %%% "ftypes-array" % "0.0.1" ),
-        libraryDependencies +=  "com.lihaoyi" %%% "utest" % "0.3.1" % "test",
+        libraryDependencies ++= Seq(
+            "com.bryghts.ftypes-array" %%% "ftypes-array" % "0.0.1" ,
+            "com.bryghts.ftypes-string" %%% "ftypes-string" % "0.0.1" ,
+            "com.bryghts.ftypes-caseclass" %%  "FTypes-CaseClass" % "0.0.1" ,
+            "com.lihaoyi" %%% "utest" % "0.3.1" % "test"),
         testFrameworks      +=  new TestFramework("utest.runner.Framework")
     )
     .settings(allSettings: _*)

@@ -1,9 +1,9 @@
-# Async without Future
+# What is FTypes?
 
 
 FTypes:
 
-* right now, IS EXPERIMENTAL
+* right now: IS EXPERIMENTAL
 * is a type system
 * is for concurrent programming (async)
 * solve the same problem than futures do (without futures)
@@ -45,7 +45,7 @@ libraryDependencies += "com.bryghts.ftypes" %%% "ftypes" % "0.0.3"
 
 NOTE: The first line is to include the [Macro Paradise compiler plugin](http://docs.scala-lang.org/overviews/macros/paradise.html) which powers the [@Async](#case-classes) macro-annotation
 
-# Sample
+# Example
 Imagine we have a function like this:
 
 ```scala
@@ -95,6 +95,43 @@ val totalCount:   async.Int = europeCount + americaCount
 ```
 
 **async.Int** is just one of the types that FTypes provides out of the box, with practically all the same operations than the standard Int, where, like in the example, the '+' operation returns an async.Int that will hold the value of the sum (whenever the other two numbers are available)
+
+
+# Futures without Future
+Most Scala devs have to work with [Futures](http://docs.scala-lang.org/overviews/core/futures.html) in a daily basis and know the toll they apply in the mental model and the code readability/maintainability. If you don't know what a Future is, you can find an excellent introduction in [this article](http://danielwestheide.com/blog/2013/01/09/the-neophytes-guide-to-scala-part-8-welcome-to-the-future.html) by Daniel Westheide.
+
+If you know what a future is and how it works, let me present you with a comparison. On one side, we have:
+
+```scala
+Future[Int]
+```
+
+On the other hand, we have:
+
+```scala
+async.Int
+```
+
+Both represent exactly the same thing, an Int value that will be available at some, unknown, point in time.
+
+Comparing both snippets, you can draw an immediate conclusion. While a Future is a generic type (a Future can hold any type of data), the `async.Int` is a concrete type that con only hold integers. This means that if you want some sort of asynchronous `Boolean`, with Futures you have the problem already solved (i.e. `Future[Boolean]`) while with FTypes you need another specific type (which, by the way, FTypes already provides and is called `async.Boolean`).
+
+The **main difference** comes when you compare the methods provided by `Future` and `async.Int`. Future is a generic type and knows nothing about the data is going to end up holding, were async.Int is always going to be used to only hold ints. In fact `async.Int` has none of the methods provided by the `Future` class but (nearly) all the methods provided by a regular, synchronous `Int`.
+
+That is: With an `async.Int` you operate exactly the same as if it was a normal `scala.Int`
+
+And this has a nice consequence: Functions that before received regular, synchronous types:
+
+```scala
+def average(a: Double, b: Double): Double = (a + b) / 2
+```
+
+Can now be reimplemented for the asynchronous world like this:
+
+```scala
+def average(a: async.Double, b: async.Double): async.Double = (a + b) / 2
+```
+
 
 # Interoperativility
 
